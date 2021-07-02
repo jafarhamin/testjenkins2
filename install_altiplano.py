@@ -435,7 +435,7 @@ def install_device_extensions():
 def main():
     info('Initializing AV information')
     init_av_info()
-    path = os.environ['PATH']
+    path = os.environ['PATH11']
     print('PATH IS {}.'.format(path))
     """
     wait_for_pod('kibana')

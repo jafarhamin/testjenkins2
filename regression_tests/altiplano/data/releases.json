@@ -1,0 +1,5 @@
+{
+    "av_release": "http://10.157.88.36:8080/job/Altiplano-Integration",
+    "lt_nt_extensions": "http://aww.dsl.alcatel.be/ftp/pub/outgoing/ESAM/DAILY/packageme",
+    "onu_extensions": "http://10.131.69.114:8081/artifactory/libs_cr_local/com/nokia/anv/plug/vonu"
+}

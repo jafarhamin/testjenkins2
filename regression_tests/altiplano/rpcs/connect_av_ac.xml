@@ -1,0 +1,16 @@
+<config>
+   <mds:manager-directory xmlns:mds="http://www.nokia.com/management-solutions/manager-directory-service">
+      <mds:manager-info xmlns:xc="urn:ietf:params:xml:ns:netconf:base:1.0" xc:operation="create">
+         <mds:name>Altiplano_AV</mds:name>
+         <mds:ip>{{AV_IP}}</mds:ip>
+         <mds:netconf-port>6514</mds:netconf-port>
+         <mds:protocol>https</mds:protocol>
+         <mds:manager-type>NAV</mds:manager-type>
+         <mds:user-name>adminuser</mds:user-name>
+         <mds:password>password</mds:password>
+         <mds:max-connections>5</mds:max-connections>
+         <mds:http-url>https://{{AV_IP}}/nokia-altiplano-av</mds:http-url>
+         <mds:vonumgmt-address>tcp://{{AV_IP}}:30802/</mds:vonumgmt-address>
+      </mds:manager-info>
+   </mds:manager-directory>
+</config>

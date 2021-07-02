@@ -1,0 +1,12 @@
+<config>
+   <platform:platform xmlns:platform="http://www.nokia.com/management-solutions/anv-platform">
+      <app:external-application xmlns:app="http://www.nokia.com/management-solutions/external-application">
+         <app:web-application>
+            <app:name>Vproxy</app:name>
+            <app:description>Vonuproxy Web UI</app:description>
+            <app:short-name>VP</app:short-name>
+            <app:url>http://{{AV_IP}}:{{VPORXYMGMT_PORT}}/web/vonuproxy.html</app:url>
+         </app:web-application>
+      </app:external-application>
+   </platform:platform>
+</config>

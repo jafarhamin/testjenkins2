@@ -1,0 +1,7 @@
+<config>
+   <anv:device-manager xmlns:anv="http://www.nokia.com/management-solutions/anv">
+      <adh:netconf-stack-configuration xmlns:adh="http://www.nokia.com/management-solutions/anv-device-holders">
+         <adh:request-timeout>300</adh:request-timeout>
+      </adh:netconf-stack-configuration>
+   </anv:device-manager>
+</config>

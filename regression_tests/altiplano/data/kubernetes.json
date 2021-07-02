@@ -1,0 +1,276 @@
+{
+    "chart_repository":{
+        "name": "altiplano_helm_cr_virtual",
+        "url": "http://artifactory-espoo-fnms.int.net.nokia.com:8081/artifactory/altiplano_helm_virtual"
+    },
+    "helm_charts":[
+        {
+            "name": "altiplano-solution",
+            "release": "nokia",
+            "order": 3,
+            "parameters":[
+                {
+                    "parameter": "global.persistence=false",
+                    "condition": "true"
+                },
+                {
+                    "parameter": "global.registry=artifactory-espoo-fnms.int.net.nokia.com:9000",
+                    "condition": "true"
+                },
+                {
+                    "parameter": "global.registry1=artifactory-espoo-fnms.int.net.nokia.com:9000",
+                    "condition": "true"
+                },
+                {
+                    "parameter": "global.registry3=artifactory-espoo-fnms.int.net.nokia.com:9000",
+                    "condition": "true"
+                },
+                {
+                    "parameter": "global.K8S_PUBLIC_IP={{AV_PUBLIC_IP}}",
+                    "condition": "true"
+                },
+                {
+                    "parameter": "tags.premium=true",
+                    "condition": "true"
+                },
+                {
+                    "parameter": "altiplano-av.env.open.ENABLE_VONU=true",
+                    "condition": "true"
+                },        
+                {
+                    "parameter": "altiplano-mariadb.mariadb.persistence.enabled=false",
+                    "condition": "true"
+                },
+                {
+                    "parameter": "altiplano-mariadb.mariadb.persistence.backup.enabled=false",
+                    "condition": "true"
+                },
+                {
+                    "parameter": "altiplano-vonuproxy.service.mgmtType=NodePort",
+                    "condition": "true"
+                },
+                {
+                    "parameter": "global.ingressReleaseName=nokia-infra",
+                    "condition": "true"
+                },
+                {
+                    "parameter": "altiplano-victproxy.service.mgmtType=NodePort",
+                    "condition": "mobility"
+                },
+                {
+                    "parameter": "altiplano-datasyncproxy.service.mgmtType=NodePort",
+                    "condition": "mobility"
+                },
+                {
+                    "parameter": "altiplano-victp.enabled=true",
+                    "condition": "mobility"
+                },
+                {
+                    "parameter": "altiplano-victpproxy.enabled=true",
+                    "condition": "mobility"
+                },
+                {
+                    "parameter": "altiplano-datasyncctlr.enabled=true",
+                    "condition": "mobility"
+                },
+                {
+                    "parameter": "altiplano-datasyncproxy.enabled=true",
+                    "condition": "mobility"
+                },
+                {
+                    "parameter": "altiplano-av.env.open.ENABLE_VICTP_FILTERING_LISTENERS=true",
+                    "condition": "mobility"
+                },
+                {
+                    "parameter": "global.use_tls=false",
+                    "condition": "no-tls"
+                },
+                {
+                    "parameter": "tags.topa=true",
+                    "condition": "vCLI"
+                },
+                {
+                    "parameter": "altiplano-healthengine.enabled=false",
+                    "condition": "light_version"
+                },
+                {
+                    "parameter": "altiplano-ipfixbecollector.enabled=false",
+                    "condition": "light_version"
+                },
+                {
+                    "parameter": "altiplano-ipfixfecollector.enabled=false",
+                    "condition": "light_version"
+                },
+                {
+                    "parameter": "altiplano-nclivecollector.enabled=false",
+                    "condition": "light_version"
+                },
+                {
+                    "parameter": "altiplano-netconfinventorycollector.enabled=false",
+                    "condition": "light_version"
+                },
+                {
+                    "parameter": "altiplano-rcdeviceproxy.enabled=false",
+                    "condition": "light_version"
+                },
+                {
+                    "parameter": "altiplano-tcaengine.enabled=false",
+                    "condition": "light_version"
+                }
+            ]
+        },
+        {
+            "name": "altiplano-infra",
+            "release": "nokia-infra",
+            "order": 2,
+            "parameters":[
+                {
+                    "parameter": "tags.premium=true",
+                    "condition": "true"
+                },
+                {
+                    "parameter": "global.persistence=false",
+                    "condition": "true"
+                },
+                {
+                    "parameter": "global.registry=artifactory-espoo-fnms.int.net.nokia.com:9000",
+                    "condition": "true"
+                },
+                {
+                    "parameter": "global.registry1=artifactory-espoo-fnms.int.net.nokia.com:9000",
+                    "condition": "true"
+                },
+                {
+                    "parameter": "global.registry3=artifactory-espoo-fnms.int.net.nokia.com:9000",
+                    "condition": "true"
+                },
+                {
+                    "parameter": "global.K8S_PUBLIC_IP={{AV_PUBLIC_IP}}",
+                    "condition": "true"
+                },
+                {
+                    "parameter": "altiplano-mariadb.mariadb.persistence.enabled=false",
+                    "condition": "true"
+                },
+                {
+                    "parameter": "altiplano-mariadb.mariadb.persistence.backup.enabled=false",
+                    "condition": "true"
+                },
+                {
+                    "parameter": "altiplano-ingress.tcp.30801=default/nokia-altiplano-vonuproxy-mgmt:8801",
+                    "condition": "true"
+                },
+                {
+                    "parameter": "global.use_tls=false",
+                    "condition": "no-tls"
+                },
+                {
+                    "parameter": "altiplano-mariadb.mariadb.use_tls=false",
+                    "condition": "no-tls"
+                },
+                {
+                    "parameter": "altiplano-pmfilegenerator.enabled=false",
+                    "condition": "light_version"
+                },
+                {
+                    "parameter": "altiplano-pts-kube-state-metrics.enabled=false",
+                    "condition": "light_version"
+                },
+                {
+                    "parameter": "altiplano-pts-node-exporter.enabled=false",
+                    "condition": "light_version"
+                },
+                {
+                    "parameter": "altiplano-pts-pushgateway.enabled=false",
+                    "condition": "light_version"
+                },
+                {
+                    "parameter": "altiplano-pts-server.enabled=false",
+                    "condition": "light_version"
+                }
+            ]
+        },
+        {
+            "name": "altiplano-secrets",
+            "release": "nokia-secrets",
+            "order": 1,
+            "parameters":[]
+        }
+    ],
+    "kubernets_resources":[
+        {
+            "name": "ingress-controller-leader-nginx",
+            "type": "cm"
+        },
+        {
+            "name": "nokia-infra-altiplano-redis-pre-delete",
+            "type": "job"
+        },
+        {
+            "name": "nokia-infra-altiplano-redis",
+            "type": "service"
+        },
+        {
+            "name": "nokia-infra-altiplano-redis-install",
+            "type": "service"
+        },
+        {
+            "name": "nokia-infra-altiplano-redis-redis-secrets",
+            "type": "secret"
+        },
+        {
+            "name": "nokia-infra-altiplano-redis-admin-secrets",
+            "type": "secret"
+        },
+        {
+            "name": "nokia-infra-altiplano-mariadb-mariadb-initialusers",
+            "type": "secret"
+        },
+        {
+            "name": "nokia-altiplano-ac",
+            "type": "secret"
+        },
+        {
+            "name": "nokia-infra-altiplano-grafana",
+            "type": "secret"
+        },
+        {
+            "name": "nokia-infra-altiplano-redis-install",
+            "type": "roles"
+        },
+        {
+            "name": "nokia-infra-altiplano-mariadb-install",
+            "type": "roles"
+        },
+        {
+            "name": "nokia-infra-altiplano-redis-install",
+            "type": "serviceaccounts"
+        },
+        {
+            "name": "nokia-infra-altiplano-mariadb-install",
+            "type": "serviceaccounts"
+        },
+        {
+            "name": "nokia-infra-altiplano-redis-install",
+            "type": "rolebindings"
+        },
+        {
+            "name": "nokia-infra-altiplano-mariadb-install",
+            "type": "rolebindings"
+        }
+    ],
+    "ssh_keys":[
+        {
+            "name": "NC_SSH_SERVER_DH_KEXS",
+            "value": "diffie-hellman-group1-sha1,diffie-hellman-group14-sha1,diffie-hellman-group14-sha256,diffie-hellman-group15-sha512,diffie-hellman-group16-sha512,diffie-hellman-group17-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521"
+        },
+        {
+            "name": "NC_SSH_SERVER_CIPHERS",
+            "value": "aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-cbc,3des-cbc,blowfish-cbc,aes192-cbc,aes256-cbc"
+        },
+        {
+            "name": "NC_SSH_SERVER_MACS",
+            "value": "hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1,hmac-md5,hmac-sha1-96,hmac-md5-96"
+        }
+    ]
+}

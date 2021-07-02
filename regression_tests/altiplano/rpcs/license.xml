@@ -1,0 +1,10 @@
+<config>
+   <platform:platform xmlns:platform="http://www.nokia.com/management-solutions/anv-platform">
+      <license:license-details xmlns:license="http://www.nokia.com/management-solutions/license-management">
+         <license:license-key xmlns:xc="urn:ietf:params:xml:ns:netconf:base:1.0" xc:operation="replace">
+            <license:license-name>CORE</license:license-name>
+            <license:key-string>{{LICENCE_KEY}}</license:key-string>
+         </license:license-key>
+      </license:license-details>
+   </platform:platform>
+</config>

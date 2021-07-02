@@ -1,0 +1,18 @@
+<config>
+   <platform:platform xmlns:platform="http://www.nokia.com/management-solutions/anv-platform">
+      <app:external-application xmlns:app="http://www.nokia.com/management-solutions/external-application">
+         <app:web-application>
+            <app:name>Kibana</app:name>
+            <app:description>View the logs of containers and node syslog</app:description>
+            <app:short-name>KB</app:short-name>
+            <app:url>https://{{AV_IP}}/altiplano-kibana</app:url>
+         </app:web-application>
+         <app:web-application>
+            <app:name>Virtualizer</app:name>
+            <app:description>Network virtualizer</app:description>
+            <app:short-name>AV</app:short-name>
+            <app:url>https://{{AV_IP}}/nokia-altiplano-av</app:url>
+         </app:web-application>
+      </app:external-application>
+   </platform:platform>
+</config>

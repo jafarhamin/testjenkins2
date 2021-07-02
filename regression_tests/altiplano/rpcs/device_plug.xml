@@ -1,0 +1,3 @@
+<deploy-device-plug xmlns="http://www.nokia.com/management-solutions/anv-device-plugs">
+   <definition-archive>{{PLUG_NAME}}</definition-archive>
+</deploy-device-plug>

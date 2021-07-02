@@ -1,0 +1,12 @@
+{
+    "apps":[
+        {
+            "name": "basic",
+            "rpc": "kibana_virtualizer.xml"
+        },
+        {
+            "name": "vproxy_GUI",
+            "rpc": "vproxy_gui.xml"
+        }
+    ]
+}

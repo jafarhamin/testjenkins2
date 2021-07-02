@@ -435,6 +435,9 @@ def install_device_extensions():
 def main():
     info('Initializing AV information')
     init_av_info()
+    path = os.environ['PATH']
+    print('PATH IS {}.'.format(path))
+    """
     wait_for_pod('kibana')
     info('Checking Minikube status')
     if not minikube_is_running():
@@ -470,6 +473,7 @@ def main():
     install_gui_applications()
     info('Installing device extensions')
     install_device_extensions()
+    """
     info('Finish')
 
 

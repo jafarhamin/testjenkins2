@@ -437,6 +437,10 @@ def main():
     init_av_info()
     path = os.environ['PATH11']
     print('PATH IS {}.'.format(path))
+    path = os.environ['ENV2']
+    print('ENV2 IS {}.'.format(path))
+    path = os.environ['ENV3']
+    print('ENV3 IS {}.'.format(path))
     """
     wait_for_pod('kibana')
     info('Checking Minikube status')

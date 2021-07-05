@@ -3,7 +3,6 @@ import sys
 import subprocess
 import json
 import requests
-import shutil
 import time
 import re
 from ncclient import manager
@@ -172,9 +171,6 @@ def create_kubernetes_services():
 
 
 def remove_images():
-    total, used, free = shutil.disk_usage("/")
-    if (free // (2**30)) >= 50:
-        return
     run('sudo docker rmi $(docker images -a -q)', immediate_exit=False, print_output=False)
 
 

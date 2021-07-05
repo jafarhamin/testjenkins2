@@ -255,12 +255,17 @@ def install_release():
 
 def get_pod_info(pod):
     run('sudo kubectl get pods', immediate_exit=False)
+    print('get pod info 1')
     attempts = 20
     info = run('sudo kubectl get pods --all-namespaces | grep {}'.format(pod), immediate_exit=False)
+    print('get pod info 2')
     while info == '' and attempts > 0:
         attempts -= 1
-        wait(20)
+        print('get pod info 3')
+	wait(20)
+        print('get pod info 4')
         info = run('sudo kubectl get pods --all-namespaces | grep {}'.format(pod), immediate_exit=False)
+        print('get pod info 5')
     info = run('sudo kubectl get pods --all-namespaces | grep {}'.format(pod))
     info = (" ".join(info.split())).split(' ')
     pod_name = info[1].split('-')
@@ -269,11 +274,15 @@ def get_pod_info(pod):
 
 
 def wait_for_pod(pod_name):
+    print('wait for pod 1')
     pod_info = get_pod_info(pod_name)
+    print('wait for pod 2')
     attempts = 20
     while attempts > 0 and (pod_info['ready'] != '1/1' or pod_info['status'] != 'Running'):
+        print('wait for pod 3')
         attempts -= 1
         wait(20)
+        print('wait for pod 4')
         pod_info = get_pod_info(pod_name)
     if attempts == 0:
         error('Pod {} failed to get ready'.format(pod_name))
@@ -431,6 +440,7 @@ def install_device_extensions():
 def main():
     info('Initializing AV information')
     init_av_info()
+    """
     info('Checking Minikube status')
     if not minikube_is_running():
         info('Installing Minikube')
@@ -451,6 +461,7 @@ def main():
     pull_charts()
     info('Installing release')
     install_release()
+    """
     info('Waiting for AV pod to get ready')
     wait_for_pod('altiplano-av')
     info('Waiting for AC pod to get ready')

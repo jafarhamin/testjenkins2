@@ -255,15 +255,11 @@ def install_release():
 
 def get_pod_info(pod):
     run('sudo kubectl get pods', immediate_exit=False)
-    print('get pod info 1')
     attempts = 20
     info = run('sudo kubectl get pods --all-namespaces | grep {}'.format(pod), immediate_exit=False)
-    print('get pod info 2')
     while info == '' and attempts > 0:
         attempts -= 1
-        print('get pod info 3')
 	wait(20)
-        print('get pod info 4')
         info = run('sudo kubectl get pods --all-namespaces | grep {}'.format(pod), immediate_exit=False)
         print('get pod info 5')
     info = run('sudo kubectl get pods --all-namespaces | grep {}'.format(pod))
@@ -274,15 +270,11 @@ def get_pod_info(pod):
 
 
 def wait_for_pod(pod_name):
-    print('wait for pod 1')
     pod_info = get_pod_info(pod_name)
-    print('wait for pod 2')
     attempts = 20
     while attempts > 0 and (pod_info['ready'] != '1/1' or pod_info['status'] != 'Running'):
-        print('wait for pod 3')
         attempts -= 1
         wait(20)
-        print('wait for pod 4')
         pod_info = get_pod_info(pod_name)
     if attempts == 0:
         error('Pod {} failed to get ready'.format(pod_name))
@@ -440,15 +432,16 @@ def install_device_extensions():
 def main():
     info('Initializing AV information')
     init_av_info()
-    """
     info('Checking Minikube status')
-    if not minikube_is_running():
-        info('Installing Minikube')
-        remove_minikube()
-        prunes_dockers()
-        start_minikube()
-        info('Starting Helm')
-        start_helm()
+
+    # if not minikube_is_running():
+    info('Installing Minikube')
+    remove_minikube()
+    prunes_dockers()
+    start_minikube()
+    info('Starting Helm')
+    start_helm()
+    
     info('Creating Kubernetes servicies')
     create_kubernetes_services()
     info('Removing images')

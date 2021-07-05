@@ -251,6 +251,7 @@ def install_release():
         chart_path = '{}/{}'.format(HOST_PATH,chart_name)
         parameters = calculate_helm_parameters(chart['parameters'])
         run('sudo helm upgrade -i {} -f {}/values.yaml {} --timeout 1000s {}'.format(chart_release, chart_path, chart_path, parameters))
+	wait(20)
 
 
 def get_pod_info(pod):

@@ -465,13 +465,13 @@ def main():
     info('Setting SSH keys')
     set_ssh_env_for_av_ac()
     wait(200)
-    """
     info('Installing License')
     install_license()
     info('Connecting AV and AC')
     connect_av_ac()
     info('Installing other GUI applications')
     install_gui_applications()
+    """
     info('Installing device extensions')
     install_device_extensions()
     info('Finish')

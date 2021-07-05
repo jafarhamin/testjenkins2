@@ -435,7 +435,6 @@ def install_device_extensions():
 def main():
     info('Initializing AV information')
     init_av_info()
-    wait_for_pod('kibana')
     info('Checking Minikube status')
     if not minikube_is_running():
         info('Installing Minikube')

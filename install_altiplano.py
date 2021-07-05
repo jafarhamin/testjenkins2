@@ -433,7 +433,7 @@ def main():
     info('Initializing AV information')
     init_av_info()
     info('Checking Minikube status')
-
+    """
     # if not minikube_is_running():
     info('Installing Minikube')
     remove_minikube()
@@ -450,6 +450,7 @@ def main():
     uninstall_release()
     info('Cleaning Kubernetes resources')
     clean_kubernets_resources()
+    """
     info('Pulling charts')
     pull_charts()
     info('Installing release')

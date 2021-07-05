@@ -315,7 +315,7 @@ def send_rpc(rpc, port='6514', mode='config'):
 def attempt_sending_rpc(rpc, attempts=5, port='6514', mode='config'):
     counter = attempts
     while counter > 0 and not send_rpc(rpc, port, mode):
-        wait(10)
+        wait(30)
         counter -= 1
     return (counter != 0)
 
@@ -369,7 +369,7 @@ def install_gui_applications():
 
 
 def calculate_onu_tag():
-    if VONU_PLUG != LATEST:
+    if VONU_PLUG != '':
         return VONU_PLUG
     yml_path = '{}/altiplano-solution/values.yaml'.format(HOST_PATH)
     with open(yml_path, 'r') as f:
@@ -451,7 +451,6 @@ def main():
     uninstall_release()
     info('Cleaning Kubernetes resources')
     clean_kubernets_resources()
-    """
     info('Pulling charts')
     pull_charts()
     info('Installing release')
@@ -460,8 +459,11 @@ def main():
     wait_for_pod('altiplano-av')
     info('Waiting for AC pod to get ready')
     wait_for_pod('altiplano-ac')
+    wait(30)
     info('Setting SSH keys')
     set_ssh_env_for_av_ac()
+    wait(200)
+    """
     info('Installing License')
     install_license()
     info('Connecting AV and AC')

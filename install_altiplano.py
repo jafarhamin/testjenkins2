@@ -454,7 +454,6 @@ def main():
     pull_charts()
     info('Installing release')
     install_release()
-    """
     info('Waiting for AV pod to get ready')
     wait_for_pod('altiplano-av')
     info('Waiting for AC pod to get ready')

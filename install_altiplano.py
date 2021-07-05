@@ -369,8 +369,10 @@ def install_gui_applications():
 
 
 def calculate_onu_tag():
-    if VONU_PLUG != '':
+    print('plug = ', VONU_PLUG)
+    if VONU_PLUG != '' and VONU_PLUG is not None:
         return VONU_PLUG
+    print('is empty')
     yml_path = '{}/altiplano-solution/values.yaml'.format(HOST_PATH)
     with open(yml_path, 'r') as f:
         content = f.read()

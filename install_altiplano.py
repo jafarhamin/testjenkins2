@@ -200,7 +200,7 @@ def calculate_latest_av_built():
     with open('{}/{}'.format(HOST_PATH,build_info_file), 'r') as file:
         data = file.read()
     start_index = data.find("Build #")
-    return data[start_index + 7: start_index + 11]
+    return data[start_index + 7: start_index + 11].zfill(4)
 
 
 def calculate_av_version():

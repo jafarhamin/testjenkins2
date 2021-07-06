@@ -1,0 +1,28 @@
+{
+    "device_extensions":[
+        {
+            "name": "device-extension_LS-DF-CFXR-A"
+        },
+        {
+            "name": "device-extension_LS-FX-FGLT-B"
+        },
+        {
+            "name": "device-extension_LS-FX-FWLT-B"
+        },
+        {
+            "name": "device-extension_LS-MF-LWLT-C"
+        },
+        {
+            "name": "device-extension_LS-MF-LMNT-A"
+        },
+        {
+            "name": "device-extension_LS-FX-FANT-F-FX8"
+        },
+        {
+            "name": "device-extension_LS-FX-FANT-F-FX16"
+        },
+        {
+            "name": "device-extension_LS-FX-FANT-F-FX4"
+        }
+    ]
+}

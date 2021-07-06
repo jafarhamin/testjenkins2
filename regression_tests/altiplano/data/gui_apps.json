@@ -5,7 +5,7 @@
             "rpc": "kibana_virtualizer.xml"
         },
         {
-            "name": "vproxy_GUI",
+            "name": "vproxy-GUI",
             "rpc": "vproxy_gui.xml"
         }
     ]

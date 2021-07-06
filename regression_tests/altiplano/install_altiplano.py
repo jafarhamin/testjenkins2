@@ -3,7 +3,6 @@ import sys
 import subprocess
 import json
 import requests
-import shutil
 import time
 import re
 from ncclient import manager
@@ -20,18 +19,15 @@ AV_BUILD = ''
 LT_RELEASE = ''
 LT_EXTENSION = ''
 VONU_PLUG = ''
-EXTRA_APPS = ''
+EXTRA_APPS = []
+TASKS = []
 
 
 # GLOGBAL VARIABLES
-LATEST = 'latest'
-LIGHT_VERSION = 'light_version'
-VONUPROXY_GUI = 'vonuproxy-GUI'
-
 GUI_APPS_PATH = 'data/gui_apps.json'
 KUBERNETES_PATH = 'data/kubernetes.json'
 LICENSES_PATH = 'data/licenses.json'
-NODES_PATH = 'data/nodes.json'
+DEVICE_EXTENSIONS_PATH = 'data/device_extensions.json'
 RELEASES_PATH = 'data/releases.json'
 
 CONNECT_AV_AC_RPC = 'rpcs/connect_av_ac.xml'
@@ -43,7 +39,7 @@ VPROXY_GUI_RPC = 'rpcs/vproxy_gui.xml'
 
 
 def info(message):
-    print('\n############################## {} ##########\n'.format(message))
+    print('\n######################################## {} ##########\n'.format(message))
 
 
 def error(message, immediate_exit=True, return_code=1, print_output=True):
@@ -95,6 +91,7 @@ def init_av_info():
     LT_EXTENSION = os.environ.get('LT_EXTENSION')
     VONU_PLUG = os.environ.get('VONU_PLUG')
     EXTRA_APPS = os.environ.get('EXTRA_APPS').split(',')
+    TASKS = os.environ.get('TASKS').split(',')
 
 
 def eval_double_brackets(str, globals):
@@ -172,9 +169,6 @@ def create_kubernetes_services():
 
 
 def remove_images():
-    total, used, free = shutil.disk_usage("/")
-    if (free // (2**30)) >= 50:
-        return
     run('sudo docker rmi $(docker images -a -q)', immediate_exit=False, print_output=False)
 
 
@@ -204,11 +198,11 @@ def calculate_latest_av_built():
     with open('{}/{}'.format(HOST_PATH,build_info_file), 'r') as file:
         data = file.read()
     start_index = data.find("Build #")
-    return data[start_index + 7: start_index + 11]
+    return data[start_index + 7: start_index + 11].strip().zfill(4)
 
 
 def calculate_av_version():
-    if AV_BUILD == LATEST:
+    if AV_BUILD == 'latest':
         return AV_RELEASE + '-' + calculate_latest_av_built()
     return AV_RELEASE + '-' + AV_BUILD
 
@@ -255,6 +249,7 @@ def install_release():
         chart_path = '{}/{}'.format(HOST_PATH,chart_name)
         parameters = calculate_helm_parameters(chart['parameters'])
         run('sudo helm upgrade -i {} -f {}/values.yaml {} --timeout 1000s {}'.format(chart_release, chart_path, chart_path, parameters))
+    wait(20)
 
 
 def get_pod_info(pod):
@@ -294,7 +289,7 @@ def set_ssh_env_for_av_ac():
 
 
 def send_rpc(rpc, port='6514', mode='config'):
-    print('======================= RPC Request:\n{}'.format(rpc))
+    info('RPC Request ???\n{}'.format(rpc))
     try:
         with manager.connect(host=PUBLIC_IP,
                             port=port,
@@ -310,14 +305,14 @@ def send_rpc(rpc, port='6514', mode='config'):
     except Exception as err:
             error(err, immediate_exit=False)
             return False
-    print('======================= RPC Response:\n{}'.format(response))
+    info('RPC Response !!!\n{}'.format(response))
     return True
 
 
 def attempt_sending_rpc(rpc, attempts=5, port='6514', mode='config'):
     counter = attempts
     while counter > 0 and not send_rpc(rpc, port, mode):
-        wait(10)
+        wait(30)
         counter -= 1
     return (counter != 0)
 
@@ -360,8 +355,6 @@ def connect_av_ac():
 
 def install_gui_applications():
     vproxymgmt_port = run('sudo kubectl get svc|grep vonuproxy-mgmt | awk \'{print $(NF-1)}\' | cut -d \':\' -f 2 | cut -d \'/\' -f 1')
-    print(vproxymgmt_port)
-    print('EXTRA_APPS', EXTRA_APPS)
     apps = read_eval_file(GUI_APPS_PATH)
     for app in apps['apps']:
         app_name = app['name']
@@ -371,7 +364,7 @@ def install_gui_applications():
 
 
 def calculate_onu_tag():
-    if VONU_PLUG != LATEST:
+    if VONU_PLUG != '' and VONU_PLUG is not None:
         return VONU_PLUG
     yml_path = '{}/altiplano-solution/values.yaml'.format(HOST_PATH)
     with open(yml_path, 'r') as f:
@@ -409,7 +402,10 @@ def download_lt_nt_extension():
 
 
 def calculete_lt_nt_extension_names():
-    extensions = run('cd {}/internal/YANG; find . -name "*.zip"'.format(HOST_PATH))
+    extension_patterns = read_eval_file(DEVICE_EXTENSIONS_PATH)
+    extension_patterns = extension_patterns['device_extensions']
+    extension_patterns = '|'.join(v['name'] for v in extension_patterns)
+    extensions = run('cd {}/internal/YANG; find . -name "*.zip" | grep -i -E "{}"'.format(HOST_PATH, extension_patterns))
     extensions = extensions.split('\n')
     extensions = [i[2:] for i in extensions]
     return extensions
@@ -430,46 +426,60 @@ def install_device_extensions():
     extensions = calculete_lt_nt_extension_names()
     for extension in extensions:
         configure_device_exentsion(extension, 'internal/YANG/{}'.format(extension), av_pod)
+        wait(20)
 
 
-def main():
-    info('Initializing AV information')
-    init_av_info()
-    wait_for_pod('kibana')
-    info('Checking Minikube status')
-    if not minikube_is_running():
-        info('Installing Minikube')
-        remove_minikube()
-        prunes_dockers()
-        start_minikube()
-        info('Starting Helm')
-        start_helm()
-    info('Creating Kubernetes servicies')
-    create_kubernetes_services()
-    info('Removing images')
-    remove_images()
-    info('Uninstalling Releases')
-    uninstall_release()
-    info('Cleaning Kubernetes resources')
-    clean_kubernets_resources()
-    info('Pulling charts')
-    pull_charts()
-    info('Installing release')
-    install_release()
+def restart_pods():
+    run('sudo kubectl delete pods `sudo kubectl get pods --all-namespaces |egrep \'vonum|vonup|-av-\'| awk \'{print $2}\'`')
     info('Waiting for AV pod to get ready')
     wait_for_pod('altiplano-av')
     info('Waiting for AC pod to get ready')
     wait_for_pod('altiplano-ac')
-    info('Setting SSH keys')
-    set_ssh_env_for_av_ac()
-    info('Installing License')
-    install_license()
-    info('Connecting AV and AC')
-    connect_av_ac()
-    info('Installing other GUI applications')
-    install_gui_applications()
-    info('Installing device extensions')
-    install_device_extensions()
+
+def main():
+    info('Initializing AV information')
+    init_av_info()
+    info('Checking Minikube status')
+    minikube = minikube_is_running()
+    if 'upgrade-minikube' in TASKS or not minikube:
+        info('Upgrading Minikube')
+        remove_minikube()
+        prunes_dockers()
+        start_minikube()
+        wait(30)
+        start_helm()
+    if 'upgrade-av' in TASKS:
+        info('Creating Kubernetes servicies')
+        create_kubernetes_services()
+        info('Removing images')
+        remove_images()
+        info('Uninstalling Releases')
+        uninstall_release()
+        info('Cleaning Kubernetes resources')
+        clean_kubernets_resources()
+        info('Pulling charts')
+        pull_charts()
+        info('Installing release')
+        install_release()
+        info('Waiting for AV pod to get ready')
+        wait_for_pod('altiplano-av')
+        info('Waiting for AC pod to get ready')
+        wait_for_pod('altiplano-ac')
+        wait(30)
+        info('Setting SSH keys')
+        set_ssh_env_for_av_ac()
+        wait(200)
+        info('Installing License')
+        install_license()
+        info('Connecting AV and AC')
+        connect_av_ac()
+        info('Installing other GUI applications')
+        install_gui_applications()
+    if 'upgrade-device-extensions' in TASKS:
+        info('Installing device extensions')
+        install_device_extensions()
+    if 'restart-pods' in TASKS:
+        restart_pods()
     info('Finish')
 
 
@@ -480,12 +490,12 @@ def test_main():
     os.environ['PRIVATE_IP'] = '192.168.0.31'
     os.environ['AV_RELEASE'] = '21.9.0-SNAPSHOT'
     os.environ['AV_BUILD'] = 'latest'
-    os.environ['VONU_PLUG'] = 'latest'
+    os.environ['VONU_PLUG'] = ''
     os.environ['LT_RELEASE'] = '21.06'
     os.environ['LT_EXTENSION'] = '304'
-    os.environ['EXTRA_APPS'] = 'light_verion,vproxy_GUI'
+    os.environ['EXTRA_APPS'] = 'light-verion,vproxy-GUI'
+    os.environ['TASKS'] = 'upgrade-minikube,upgrade-av,upgrade-device-extensions'
     main()
 
-
 if __name__ == "__main__":
-    test_main()
+    main()

@@ -91,31 +91,31 @@
                 },
                 {
                     "parameter": "altiplano-healthengine.enabled=false",
-                    "condition": "light_version"
+                    "condition": "light-version"
                 },
                 {
                     "parameter": "altiplano-ipfixbecollector.enabled=false",
-                    "condition": "light_version"
+                    "condition": "light-version"
                 },
                 {
                     "parameter": "altiplano-ipfixfecollector.enabled=false",
-                    "condition": "light_version"
+                    "condition": "light-version"
                 },
                 {
                     "parameter": "altiplano-nclivecollector.enabled=false",
-                    "condition": "light_version"
+                    "condition": "light-version"
                 },
                 {
                     "parameter": "altiplano-netconfinventorycollector.enabled=false",
-                    "condition": "light_version"
+                    "condition": "light-version"
                 },
                 {
                     "parameter": "altiplano-rcdeviceproxy.enabled=false",
-                    "condition": "light_version"
+                    "condition": "light-version"
                 },
                 {
                     "parameter": "altiplano-tcaengine.enabled=false",
-                    "condition": "light_version"
+                    "condition": "light-version"
                 }
             ]
         },
@@ -170,23 +170,23 @@
                 },
                 {
                     "parameter": "altiplano-pmfilegenerator.enabled=false",
-                    "condition": "light_version"
+                    "condition": "light-version"
                 },
                 {
                     "parameter": "altiplano-pts-kube-state-metrics.enabled=false",
-                    "condition": "light_version"
+                    "condition": "light-version"
                 },
                 {
                     "parameter": "altiplano-pts-node-exporter.enabled=false",
-                    "condition": "light_version"
+                    "condition": "light-version"
                 },
                 {
                     "parameter": "altiplano-pts-pushgateway.enabled=false",
-                    "condition": "light_version"
+                    "condition": "light-version"
                 },
                 {
                     "parameter": "altiplano-pts-server.enabled=false",
-                    "condition": "light_version"
+                    "condition": "light-version"
                 }
             ]
         },

@@ -80,7 +80,7 @@ def download_file(file_name, file_url):
 
 
 def init_av_info():
-    global HOST_PATH, LOCATION, PUBLIC_IP, PRIVATE_IP, AV_RELEASE, AV_BUILD, LT_RELEASE, LT_EXTENSION, VONU_PLUG, EXTRA_APPS
+    global HOST_PATH, LOCATION, PUBLIC_IP, PRIVATE_IP, AV_RELEASE, AV_BUILD, LT_RELEASE, LT_EXTENSION, VONU_PLUG, EXTRA_APPS, TASKS
     HOST_PATH = os.environ.get('HOST_PATH')
     LOCATION = os.environ.get('LOCATION')
     PUBLIC_IP = os.environ.get('PUBLIC_IP')

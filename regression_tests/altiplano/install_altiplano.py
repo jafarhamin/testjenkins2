@@ -437,12 +437,13 @@ def restart_pods():
     wait_for_pod('altiplano-ac')
 
 def main():
-    info('TASKS {}'.format(TASKS))
-    info('EXTRA_APPS {}'.format(EXTRA_APPS))
     info('Initializing AV information')
     init_av_info()
+    info('TASKS {}'.format(TASKS))
+    info('EXTRA_APPS {}'.format(EXTRA_APPS))
     info('Checking Minikube status')
     minikube = minikube_is_running()
+    info(minikube)
     if 'upgrade-minikube' in TASKS or not minikube:
         info('Upgrading Minikube')
         remove_minikube()

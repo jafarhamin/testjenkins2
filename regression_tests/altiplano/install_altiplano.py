@@ -437,6 +437,7 @@ def restart_pods():
     wait_for_pod('altiplano-ac')
 
 def main():
+    info(TASKS)
     info('Initializing AV information')
     init_av_info()
     info('Checking Minikube status')

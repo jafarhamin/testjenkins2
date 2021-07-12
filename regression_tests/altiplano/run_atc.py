@@ -83,7 +83,7 @@ def launch_test_parameters():
     parameters += ' -P PCTA:10.80.89.9'
     parameters += ' -a --framework ROBOT'
     parameters += ' -K {}'.format(DEVICE_EXTENSION_PATH)
-    parameters += ' e MERC'
+    parameters += ' -e MERC'
     parameters += ' -D {}'.format(LOG_PATH)
     return parameters
 

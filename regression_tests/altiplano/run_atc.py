@@ -88,7 +88,7 @@ def launch_test_parameters():
 
 
 def launch_test_batch():
-    sutil.run('source {}/atc/env/.profile.common; source {}/robot/.robot.profile'.format(HOST_REPO_PATH, HOST_REOP_PATH))
+    sutil.run('source {}/atc/env/.profile.common; source {}/robot/.robot.profile'.format(HOST_REPO_PATH, HOST_REPO_PATH))
     script_path = '{}/atc/cm8/auto/tools/pbscript/launchTestBatch'.format(HOST_REPO_PATH)
     sutil.run('chmod +x {}'.format(script_path))
     parameters = launch_test_parameters()

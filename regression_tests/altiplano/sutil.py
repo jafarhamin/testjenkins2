@@ -45,7 +45,7 @@ def wait(sec):
 def download_file(file_name, file_url, path_to_save):
     if os.path.exists('{}/{}'.format(path_to_save, file_name)):
         return
-    run('cd {}; sudo wget {} --no-proxy'.format(path_to_save, file_url))
+    run('cd {}; wget {} --no-proxy'.format(path_to_save, file_url))
 
 
 

@@ -101,8 +101,8 @@ def main():
     sutil.info('Initializing setup information')
     read_arguments()
     sutil.info('Pulling repositories')
-    clone_repositories()
-    pull_repositories()
+    #clone_repositories()
+    #pull_repositories()
     sutil.info('Launching test batch')
     launch_test_batch()
 

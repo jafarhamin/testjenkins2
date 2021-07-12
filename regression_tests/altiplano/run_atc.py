@@ -17,9 +17,13 @@ SETUP_FILE_PATH = ''
 
 
 def read_arguments():
+    sutil.info('1')
     parser = argparse.ArgumentParser()
+    sutil.info('2')
     parser.add_argument('--TEST_CASE_TYPE', dest='TEST_CASE_TYPE', required=True, help='')
+    sutil.info('3')
     parser.add_argument('--TEST_DOMAIN', dest='TEST_DOMAIN', required=True, help='')
+    sutil.info('4')
     parser.add_argument('--ONU_MGMT_MODE', dest='ONU_MGMT_MODE', required=True, help='virtual|embed')
     parser.add_argument('--TARGET_IP', dest='TARGET_IP', required=True, help='')
     parser.add_argument('--HOST_PATH', dest='HOST_PATH', required=True, help='')
@@ -28,6 +32,7 @@ def read_arguments():
     parser.add_argument('--LT_EXTENSION', dest='LT_EXTENSION', required=True, help='')
     parser.add_argument('--SETUP_FILE_PATH', dest='SETUP_FILE_PATH', required=True, help='')
     args = parser.parse_args()
+    sutil.info('7')
 
     global TEST_CASE_TYPE, TEST_DOMAIN, ONU_MGMT_MODE, TARGET_IP, HOST_PATH, HOST_REPO_PATH, LT_RELEASE, LT_EXTENSION, SETUP_FILE_PATH
     TEST_CASE_TYPE = args.TEST_CASE_TYPE

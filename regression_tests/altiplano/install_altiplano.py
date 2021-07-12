@@ -1,13 +1,7 @@
-import os
-import sys
-import subprocess
-import json
 import requests
-import time
-import re
 from ncclient import manager
 from ncclient.xml_ import to_ele
-
+import sutil
 
 # ENVRIRONMENT VARIABLES
 HOST_PATH = ''
@@ -28,7 +22,6 @@ GUI_APPS_PATH = 'data/gui_apps.json'
 KUBERNETES_PATH = 'data/kubernetes.json'
 LICENSES_PATH = 'data/licenses.json'
 DEVICE_EXTENSIONS_PATH = 'data/device_extensions.json'
-RELEASES_PATH = 'data/releases.json'
 
 CONNECT_AV_AC_RPC = 'rpcs/connect_av_ac.xml'
 DEVICE_PLUG_RPC = 'rpcs/device_plug.xml'
@@ -38,77 +31,33 @@ TIMEOUT_RPC = 'rpcs/timeout.xml'
 VPROXY_GUI_RPC = 'rpcs/vproxy_gui.xml'
 
 
-def info(message):
-    print('\n######################################## {} ##########\n'.format(message))
 
 
-def error(message, immediate_exit=True, return_code=1, print_output=True):
-    if not immediate_exit:
-        if print_output:
-            print('Error: {}'.format(message))
-        return
-    print('########## FATAL ERROR ##########\n{}'.format(message))
-    sys.exit(return_code)
+def read_arguments():
+    parser = ArgumentParser()
+    parser.add_argument('--HOST_PATH', dest='HOST_PATH', help='')
+    parser.add_argument('--PUBLIC_IP', dest='PUBLIC_IP', help='virtual|embed')
+    parser.add_argument('--PRIVATE_IP', dest='PRIVATE_IP', help='')
+    parser.add_argument('--AV_RELEASE', dest='AV_RELEASE', help='')
+    parser.add_argument('--AV_BUILD', dest='AV_BUILD', help='')
+    parser.add_argument('--LT_RELEASE', dest='LT_RELEASE', help='')
+    parser.add_argument('--LT_EXTENSION', dest='LT_EXTENSION', default='', help='')
+    parser.add_argument('--VONU_PLUG', dest='VONU_PLUG', help='')
+    parser.add_argument('--EXTRA_APPS', dest='EXTRA_APPS', help='')
+    parser.add_argument('--TASKS', dest='TASKS', help='')
+    args = parser.parse_args()
 
-def run(cmd, immediate_exit=True, print_output=True):
-    print('======================= {}'.format(cmd))
-    host_path = HOST_PATH
-    proc = subprocess.Popen('cd {}; {}'.format(host_path, cmd),
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=True,
-        universal_newlines=True)
-    proc.stdin.write('y\n yes\n')
-    std_out, std_err = proc.communicate()
-    if proc.returncode != 0:
-        error(std_err, immediate_exit, return_code=proc.returncode, print_output=print_output)
-    if print_output:
-        print(std_out)
-    return std_out.strip()
-
-
-def wait(sec):
-    print('waiting for {} seconds ...'.format(sec))
-    time.sleep(sec)
-
-
-def download_file(file_name, file_url):
-    if os.path.exists('{}/{}'.format(HOST_PATH, file_name)):
-        return
-    run('sudo wget {} --no-proxy'.format(file_url))
-
-
-def init_av_info():
-    global HOST_PATH, LOCATION, PUBLIC_IP, PRIVATE_IP, AV_RELEASE, AV_BUILD, LT_RELEASE, LT_EXTENSION, VONU_PLUG, EXTRA_APPS
-    HOST_PATH = os.environ.get('HOST_PATH')
-    LOCATION = os.environ.get('LOCATION')
-    PUBLIC_IP = os.environ.get('PUBLIC_IP')
-    PRIVATE_IP = os.environ.get('PRIVATE_IP')
-    AV_RELEASE = os.environ.get('AV_RELEASE')
-    AV_BUILD = os.environ.get('AV_BUILD')
-    LT_RELEASE = os.environ.get('LT_RELEASE')
-    LT_EXTENSION = os.environ.get('LT_EXTENSION')
-    VONU_PLUG = os.environ.get('VONU_PLUG')
-    EXTRA_APPS = os.environ.get('EXTRA_APPS').split(',')
-    TASKS = os.environ.get('TASKS').split(',')
-
-
-def eval_double_brackets(str, globals):
-    for f in re.findall("[\[\{][\{].*?[\}][\}]", str):
-        evaluated = eval(f[2:-2], globals)
-        if evaluated is None:
-            error('{} not found'.format(f[2:-2]))
-        str = str.replace(f, evaluated)
-    return str
-
-
-def read_eval_file(path, globals={}):
-    with open(path, 'r') as f:
-        content = eval_double_brackets(f.read(), globals)
-    if path.endswith('.json'):
-        content = json.loads(content)
-    return content
+    global HOST_PATH, LOCATION, PUBLIC_IP, PRIVATE_IP, AV_RELEASE, AV_BUILD, LT_RELEASE, LT_EXTENSION, VONU_PLUG, EXTRA_APPS, TASKS
+    HOST_PATH = args.HOST_PATH
+    PUBLIC_IP = args.PUBLIC_IP
+    PRIVATE_IP = args.PRIVATE_IP
+    AV_RELEASE = args.AV_RELEASE
+    AV_BUILD = args.AV_BUILD
+    LT_RELEASE = args.LT_RELEASE
+    LT_EXTENSION = args.LT_EXTENSION
+    VONU_PLUG = args.VONU_PLUG
+    EXTRA_APPS = args.EXTRA_APPS.split(',')
+    TASKS = args.TASKS.split(',')
 
 
 def read_kubernetes_settings_file():
@@ -180,27 +129,6 @@ def uninstall_release():
         release = run('sudo helm list | grep -v NAME | tail -1 | awk \'{print $1}\'')
 
 
-def calculate_latest_av_built():
-    urls = read_eval_file(RELEASES_PATH)
-    url = urls['av_release']
-    release = AV_RELEASE.split('.')
-    release = '{}.{}'.format(release[0], release[1])
-    url1 = '{}-{}-release/lastStableBuild'.format(url, release)
-    url2 = '{}/lastStableBuild'.format(url)
-    if requests.get(url1).status_code == 200:
-        release_url = url1
-    elif requests.get(url2).status_code == 200:
-        release_url = url2
-    else:
-        error('Release URL not found')
-    build_info_file = 'build_info.html'
-    run('wget -q -O {} {} --no-proxy'.format(build_info_file, release_url))
-    with open('{}/{}'.format(HOST_PATH,build_info_file), 'r') as file:
-        data = file.read()
-    start_index = data.find("Build #")
-    return data[start_index + 7: start_index + 11].strip().zfill(4)
-
-
 def calculate_av_version():
     if AV_BUILD == 'latest':
         return AV_RELEASE + '-' + calculate_latest_av_built()
@@ -215,7 +143,7 @@ def pull_charts():
         chart_name = chart['name']
         file_name = chart_name + '-' + av_version + '.tgz'
         if not os.path.exists('{}/{}'.format(HOST_PATH, file_name)):
-            run('sudo helm pull {}/{} --version {}'.format(repository, chart_name, av_version))
+            run('cd {}; sudo helm pull {}/{} --version {}'.format(HOST_PATH, repository, chart_name, av_version))
         run('sudo rm -rf {}/'.format(chart_name))
         run('sudo tar xzvf {}-{}.tgz'.format(chart_name, av_version), print_output=False)
 
@@ -249,7 +177,7 @@ def install_release():
         chart_path = '{}/{}'.format(HOST_PATH,chart_name)
         parameters = calculate_helm_parameters(chart['parameters'])
         run('sudo helm upgrade -i {} -f {}/values.yaml {} --timeout 1000s {}'.format(chart_release, chart_path, chart_path, parameters))
-    wait(20)
+        wait(30)
 
 
 def get_pod_info(pod):
@@ -258,7 +186,7 @@ def get_pod_info(pod):
     info = run('sudo kubectl get pods --all-namespaces | grep {}'.format(pod), immediate_exit=False)
     while info == '' and attempts > 0:
         attempts -= 1
-        wait(20)
+        wait(30)
         info = run('sudo kubectl get pods --all-namespaces | grep {}'.format(pod), immediate_exit=False)
     info = run('sudo kubectl get pods --all-namespaces | grep {}'.format(pod))
     info = (" ".join(info.split())).split(' ')
@@ -272,7 +200,7 @@ def wait_for_pod(pod_name):
     attempts = 20
     while attempts > 0 and (pod_info['ready'] != '1/1' or pod_info['status'] != 'Running'):
         attempts -= 1
-        wait(20)
+        wait(30)
         pod_info = get_pod_info(pod_name)
     if attempts == 0:
         error('Pod {} failed to get ready'.format(pod_name))
@@ -375,33 +303,13 @@ def calculate_onu_tag():
     return content[index:end_index].split('_')[1]    
 
 
-def calculete_onu_extension_name_url():
-    release = AV_RELEASE.split('.')
-    year = release[0]
-    month = release[1]
-    onu_tag = calculate_onu_tag()
-    vonu_plugin = '{}_{}'.format(AV_RELEASE, onu_tag)
-    extension_name = 'device-extension-vonu-{}.{}-1-{}.zip'.format(year, month, vonu_plugin)
-    extensions = read_eval_file(RELEASES_PATH)
-    url = extensions['onu_extensions']
-    extension_url = '{}/{}/{}/device-extensions/device-extension-vonu-{}.{}-1/{}/{}'.format(url, year, month, year, month, vonu_plugin, extension_name)
-    return extension_name, extension_url
+def download_tar_lt_nt_extension(lt_release, lt_extension, path_to_save):
+    extension_name = download_lt_nt_extension(lt_release, lt_extension, path_to_save)
+    run('cd {}; sudo rm -rf {}/internal'.format(path_to_save, HOST_PATH))
+    run('cd {}; sudo tar xvf {}'.format(path_to_save, extension_name), print_output=False)
 
 
-def download_lt_nt_extension():
-    release = LT_RELEASE.split('.')
-    release = '{}{}.{}'.format(release[0], release[1], LT_EXTENSION)
-    extensions = read_eval_file(RELEASES_PATH)
-    url = extensions['lt_nt_extensions']
-    file_name = 'lightspan_{}.extra.tar'.format(release)
-    file_url = '{}_{}/{}'.format(url, release, file_name)
-    download_file(file_name, file_url)
-    run('sudo rm -rf {}/internal'.format(HOST_PATH))
-    run('sudo tar xvf {}'.format(file_name), print_output=False)
-    return True
-
-
-def calculete_lt_nt_extension_names():
+def calculete_lt_nt_extension_names_to_install():
     extension_patterns = read_eval_file(DEVICE_EXTENSIONS_PATH)
     extension_patterns = extension_patterns['device_extensions']
     extension_patterns = '|'.join(v['name'] for v in extension_patterns)
@@ -423,7 +331,7 @@ def install_device_extensions():
     download_file(onu_extension_name, onu_extension_url)
     configure_device_exentsion(onu_extension_name, onu_extension_name, av_pod)
     download_lt_nt_extension()
-    extensions = calculete_lt_nt_extension_names()
+    extensions = calculete_lt_nt_extension_names_to_install()
     for extension in extensions:
         configure_device_exentsion(extension, 'internal/YANG/{}'.format(extension), av_pod)
         wait(20)
@@ -438,7 +346,7 @@ def restart_pods():
 
 def main():
     info('Initializing AV information')
-    init_av_info()
+    read_arguments()
     info('Checking Minikube status')
     minikube = minikube_is_running()
     if 'upgrade-minikube' in TASKS or not minikube:

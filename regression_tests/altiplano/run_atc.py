@@ -1,9 +1,10 @@
 import os
 import sys
 import subprocess
+import argparse
 import sutil
 
-# Input arguments
+# INPUT ARGUMENTS
 TEST_CASE_TYPE = ''
 TEST_DOMAIN = ''
 ONU_MGMT_MODE = ''
@@ -16,16 +17,16 @@ SETUP_DATA = ''
 
 
 def read_arguments():
-    parser = ArgumentParser()
-    parser.add_argument('--TEST_CASE_TYPE', dest='TEST_CASE_TYPE', help='')
-    parser.add_argument('--TEST_DOMAIN', dest='TEST_DOMAIN', help='')
-    parser.add_argument('--ONU_MGMT_MODE', dest='ONU_MGMT_MODE', help='virtual|embed')
-    parser.add_argument('--TARGET_IP', dest='TARGET_IP', help='')
-    parser.add_argument('--HOST_PATH', dest='HOST_PATH', help='')
-    parser.add_argument('--HOST_REPO_PATH', dest='HOST_REPO_PATH', help='')
-    parser.add_argument('--LT_RELEASE', dest='LT_RELEASE', help='')
-    parser.add_argument('--LT_EXTENSION', dest='LT_EXTENSION', help='')
-    parser.add_argument('--SETUP_DATA', dest='SETUP_DATA', help='')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--TEST_CASE_TYPE', dest='TEST_CASE_TYPE', required=True, help='')
+    parser.add_argument('--TEST_DOMAIN', dest='TEST_DOMAIN', required=True, help='')
+    parser.add_argument('--ONU_MGMT_MODE', dest='ONU_MGMT_MODE', required=True, help='virtual|embed')
+    parser.add_argument('--TARGET_IP', dest='TARGET_IP', required=True, help='')
+    parser.add_argument('--HOST_PATH', dest='HOST_PATH', required=True, help='')
+    parser.add_argument('--HOST_REPO_PATH', dest='HOST_REPO_PATH', required=True, help='')
+    parser.add_argument('--LT_RELEASE', dest='LT_RELEASE', required=True, help='')
+    parser.add_argument('--LT_EXTENSION', dest='LT_EXTENSION', required=True, help='')
+    parser.add_argument('--SETUP_DATA', dest='SETUP_DATA', required=True, help='')
     args = parser.parse_args()
 
     global TEST_CASE_TYPE, TEST_DOMAIN, ONU_MGMT_MODE, TARGET_IP, HOST_PATH, HOST_REPO_PATH, LT_RELEASE, LT_EXTENSION, SETUP_DATA
@@ -111,7 +112,8 @@ def main():
 def test_main():
     global TEST_CASE_TYPE, TEST_DOMAIN, ONU_MGMT_MODE, TARGET_IP, HOST_PATH, HOST_REPO_PATH, LT_RELEASE, LT_EXTENSION, SETUP_DATA
     TEST_CASE_TYPE = 'smoke'
-    TEST_DOMAIN = 'ROBOT:suite-FIBER,${DOMAIN},variable-IS_HOST:False,variable-ONU_MGNT:${ONU_MGNT}'
+    # TEST_DOMAIN = 'ROBOT:suite-FIBER,${DOMAIN},variable-IS_HOST:False,variable-ONU_MGNT:${ONU_MGNT}'
+    TEST_DOMAIN = 'ROBOT:suite-FIBER,{},variable-IS_HOST:False,variable-ONU_MGNT:${}'.format(TEST_DOMAIN, ONU_MGMT_MODE)
     ONU_MGMT_MODE = 'virtual'
     TARGET_IP = '138.203.76.194'
     HOST_PATH = '/home/hamin/test_atc'
@@ -121,6 +123,6 @@ def test_main():
     with open('test/setup_data.yml', 'r') as f:
         SETUP_DATA = f.read()
     main()
-
+    'python run_atc.py --TEST_CASE_TYPE smoke --TEST_DOMAIN l2fwd --ONU_MGMT_MODE virtual --TARGET_IP 138.203.76.194 --HOST_PATH = /home/hamin/test_atc --HOST_REPO_PATH /home/hamin/atc_repo --LT_RELEASE 21.09 --LT_EXTENSION 409'
 
 main()

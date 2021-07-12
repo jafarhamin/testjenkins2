@@ -65,7 +65,7 @@ def launch_test_parameters():
 
     LOG_DIR = 'logs'
     LOG_PATH = '{}/{}'.format(HOST_PATH, LOG_DIR)
-    if not os.path.exists(LOG_DIR):
+    if not os.path.exists(LOG_PATH):
         sutil.run('cd {}; mkdir {}'.format(HOST_PATH, LOG_DIR))
 
     extension_file_name = sutil.download_lt_nt_extension(LT_RELEASE, LT_EXTENSION, HOST_PATH)

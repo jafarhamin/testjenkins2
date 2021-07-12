@@ -31,7 +31,7 @@ def read_arguments():
     parser.add_argument('--LT_RELEASE', dest='LT_RELEASE', required=True, help='')
     parser.add_argument('--LT_EXTENSION', dest='LT_EXTENSION', required=True, help='')
     sutil.info('5')
-    parser.add_argument('--SETUP_DATA', dest='SETUP_DATA', required=True, help='')
+    #parser.add_argument('--SETUP_DATA', dest='SETUP_DATA', required=True, help='')
     sutil.info('6')
     args = parser.parse_args()
     sutil.info('7')

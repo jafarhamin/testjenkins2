@@ -89,13 +89,16 @@ def launch_test_parameters():
 
 
 def launch_test_batch():
-    sutil.run('export ROBOTREPO={}/robot'.format(HOST_REPO_PATH))
-    sutil.run('export REPO={}/atc'.format(HOST_REPO_PATH))
-    sutil.run('source {}/atc/env/.profile.common; source {}/robot/.robot.profile'.format(HOST_REPO_PATH, HOST_REPO_PATH))
-    script_path = '{}/atc/cm8/auto/tools/pbscript/launchTestBatch'.format(HOST_REPO_PATH)
-    sutil.run('chmod +x {}'.format(script_path))
+    cmds = []
+    cmds.append('export ROBOTREPO={}/robot'.format(HOST_REPO_PATH))
+    cmds.append('export REPO={}/atc'.format(HOST_REPO_PATH))
+    cmds.append('source {}/atc/env/.profile.common'.format(HOST_REPO_PATH))
+    cmds.append('source {}/robot/.robot.profile'.format(HOST_REPO_PATH))
     parameters = launch_test_parameters()
-    sutil.run('{} {}'.format(script_path, parameters), immediate_exit=False)
+    cmds.append('launchTestBatch {}'.format(parameters))
+    cmds = '; '.join(cmds)
+    
+    sutil.run(cmds)
     'launchTestBatch -k -f -r FANT-F -N FGLT-B -T ${TYPE} -R 6.2.03 -A legacy -d ROBOT:suite-FIBER,${DOMAIN},variable-IS_HOST:False,variable-ONU_MGNT:${ONU_MGNT}, -G ${LITESPAN_IP} -V MOSWA_FIBER:${SETUP} -P PCTA:${PCTA} -a --framework ROBOT -K $EXTRA -e MERC -D ${LOGDIR}'
     '/repo/atc/cm8/auto/tools/pbscript/launchTestBatch -v -k -R 21.06 -r NFXS-E -N FANT-F -V MOSWA_FIBER:NFXSD_FANTF_MOSWA_FIBER_WEEKLY_01_ATH_MOSWA_NT_LT3.yaml -K /repo/lightspan_2106.271.extra.tar -a --framework ROBOT -e MERC -G 10.80.89.40 -P PCTA:10.80.89.9 -A legacy' 
     '-d ROBOT:suite-IPFIX_NFR,variable-NFR_DB:True,variable-ONU_MGNT:embed'

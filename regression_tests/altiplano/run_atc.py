@@ -43,14 +43,14 @@ def read_arguments():
 
 def clone_repositories():
     if not os.path.exists('{}/atc'.format(HOST_REPO_PATH)):
-        sutil.run('cd {}; hg clone ssh://Devws114//repo/atc/atc'.format(HOST_REPO_PATH))
+        sutil.run('cd {}; sudo hg clone ssh://Devws114//repo/atc/atc'.format(HOST_REPO_PATH))
     if not os.path.exists('{}/robot'.format(HOST_REPO_PATH)):
-        sutil.run('cd {}; hg clone ssh://Devws114//repo/atc/robot'.format(HOST_REPO_PATH))
+        sutil.run('cd {}; sudo hg clone ssh://Devws114//repo/atc/robot'.format(HOST_REPO_PATH))
 
 
 def pull_repositories():
-    sutil.run('cd {}/atc; hg pull -u'.format(HOST_REPO_PATH))
-    sutil.run('cd {}/robot; hg pull -u'.format(HOST_REPO_PATH))
+    sutil.run('cd {}/atc; sudo hg pull -u'.format(HOST_REPO_PATH))
+    sutil.run('cd {}/robot; sudo hg pull -u'.format(HOST_REPO_PATH))
 
 
 def launch_test_parameters():

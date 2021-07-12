@@ -93,7 +93,7 @@ def launch_test_batch():
     script_path = '{}/atc/cm8/auto/tools/pbscript/launchTestBatch'.format(HOST_REPO_PATH)
     sutil.run('chmod +x {}'.format(script_path))
     parameters = launch_test_parameters()
-    sutil.run('{} {}'.format(script_path, parameters))
+    sutil.run('{} {}'.format(script_path, parameters), immediate_exit=False)
     'launchTestBatch -k -f -r FANT-F -N FGLT-B -T ${TYPE} -R 6.2.03 -A legacy -d ROBOT:suite-FIBER,${DOMAIN},variable-IS_HOST:False,variable-ONU_MGNT:${ONU_MGNT}, -G ${LITESPAN_IP} -V MOSWA_FIBER:${SETUP} -P PCTA:${PCTA} -a --framework ROBOT -K $EXTRA -e MERC -D ${LOGDIR}'
     '/repo/atc/cm8/auto/tools/pbscript/launchTestBatch -v -k -R 21.06 -r NFXS-E -N FANT-F -V MOSWA_FIBER:NFXSD_FANTF_MOSWA_FIBER_WEEKLY_01_ATH_MOSWA_NT_LT3.yaml -K /repo/lightspan_2106.271.extra.tar -a --framework ROBOT -e MERC -G 10.80.89.40 -P PCTA:10.80.89.9 -A legacy' 
     '-d ROBOT:suite-IPFIX_NFR,variable-NFR_DB:True,variable-ONU_MGNT:embed'

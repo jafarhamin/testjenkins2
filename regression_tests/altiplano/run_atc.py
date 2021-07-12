@@ -55,7 +55,7 @@ def pull_repositories():
 
 def launch_test_parameters():
     ONT_RELEASE = '6.2.03'
-    TEST_DOMAIN_PARAM = 'ROBOT:suite-FIBER,{},variable-IS_HOST:False,variable-ONU_MGNT:${}'.format(TEST_DOMAIN, ONU_MGMT_MODE)
+    TEST_DOMAIN_PARAM = 'ROBOT:suite-FIBER,{},variable-IS_HOST:False,variable-ONU_MGNT:{}'.format(TEST_DOMAIN, ONU_MGMT_MODE)
     TEST_TYPE = 'MOSWA_FIBER'
 
     with open(SETUP_FILE_PATH, 'r') as f:
@@ -76,7 +76,7 @@ def launch_test_parameters():
     parameters += ' -a --framework ROBOT'
     parameters += ' -e MERC'
     parameters += ' -r {}'.format(NT_TYPE)
-    parameters += '- N {}'.format(LT_TYPE)
+    parameters += ' -N {}'.format(LT_TYPE)
     parameters += ' -T {}'.format(TEST_CASE_TYPE)
     parameters += ' -R {}'.format(ONT_RELEASE)
     parameters += ' -d {}'.format(TEST_DOMAIN_PARAM)

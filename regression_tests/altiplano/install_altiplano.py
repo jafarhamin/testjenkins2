@@ -349,6 +349,7 @@ def main():
     read_arguments()
     info('Checking Minikube status')
     minikube = minikube_is_running()
+    info(minikube)
     if 'upgrade-minikube' in TASKS or not minikube:
         info('Upgrading Minikube')
         remove_minikube()

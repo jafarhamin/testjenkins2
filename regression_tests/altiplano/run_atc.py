@@ -80,11 +80,11 @@ def launch_test_parameters():
     parameters += ' -d {}'.format(TEST_DOMAIN_PARAM)
     parameters += ' -G {}'.format(TARGET_IP)
     parameters += ' -V {}:{}'.format(TEST_TYPE, SETUP_FILE_PATH)
+    parameters += ' -P PCTA:10.80.89.9'
     parameters += ' -a --framework ROBOT'
     parameters += ' -K {}'.format(DEVICE_EXTENSION_PATH)
     parameters += ' e MERC'
     parameters += ' -D {}'.format(LOG_PATH)
-    parameters += ' -P PCTA:10.80.89.9'
     return parameters
 
 

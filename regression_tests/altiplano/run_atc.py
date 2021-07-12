@@ -71,19 +71,20 @@ def launch_test_parameters():
     extension_file_name = sutil.download_lt_nt_extension(LT_RELEASE, LT_EXTENSION, HOST_PATH)
     DEVICE_EXTENSION_PATH = '{}/{}'.format(HOST_PATH, extension_file_name)
 
-    parameters = '-k -f'
-    parameters += ' -A legacy'
-    parameters += ' -a --framework ROBOT'
-    parameters += ' -e MERC'
+    parameters = ' -k -f'
     parameters += ' -r {}'.format(NT_TYPE)
     parameters += ' -N {}'.format(LT_TYPE)
     parameters += ' -T {}'.format(TEST_CASE_TYPE)
     parameters += ' -R {}'.format(ONT_RELEASE)
+    parameters += ' -A legacy'
     parameters += ' -d {}'.format(TEST_DOMAIN_PARAM)
     parameters += ' -G {}'.format(TARGET_IP)
     parameters += ' -V {}:{}'.format(TEST_TYPE, SETUP_FILE_PATH)
+    parameters += ' -a --framework ROBOT'
     parameters += ' -K {}'.format(DEVICE_EXTENSION_PATH)
+    parameters += ' e MERC'
     parameters += ' -D {}'.format(LOG_PATH)
+    parameters += ' -P PCTA:10.80.89.9'
     return parameters
 
 

@@ -13,7 +13,7 @@ HOST_PATH = ''
 HOST_REPO_PATH = ''
 LT_RELEASE = ''
 LT_EXTENSION = ''
-SETUP_DATA = ''
+SETUP_FILE_PATH = ''
 
 
 def read_arguments():
@@ -26,10 +26,10 @@ def read_arguments():
     parser.add_argument('--HOST_REPO_PATH', dest='HOST_REPO_PATH', required=True, help='')
     parser.add_argument('--LT_RELEASE', dest='LT_RELEASE', required=True, help='')
     parser.add_argument('--LT_EXTENSION', dest='LT_EXTENSION', required=True, help='')
-    parser.add_argument('--SETUP_DATA', dest='SETUP_DATA', required=True, help='')
+    parser.add_argument('--SETUP_FILE_PATH', dest='SETUP_FILE_PATH', required=True, help='')
     args = parser.parse_args()
 
-    global TEST_CASE_TYPE, TEST_DOMAIN, ONU_MGMT_MODE, TARGET_IP, HOST_PATH, HOST_REPO_PATH, LT_RELEASE, LT_EXTENSION, SETUP_DATA
+    global TEST_CASE_TYPE, TEST_DOMAIN, ONU_MGMT_MODE, TARGET_IP, HOST_PATH, HOST_REPO_PATH, LT_RELEASE, LT_EXTENSION, SETUP_FILE_PATH
     TEST_CASE_TYPE = args.TEST_CASE_TYPE
     TEST_DOMAIN = args.TEST_DOMAIN
     ONU_MGMT_MODE = args.ONU_MGMT_MODE
@@ -38,7 +38,7 @@ def read_arguments():
     HOST_REPO_PATH = args.HOST_REPO_PATH
     LT_RELEASE = args.LT_RELEASE
     LT_EXTENSION = args.LT_EXTENSION
-    SETUP_DATA = args.SETUP_DATA
+    SETUP_FILE_PATH = args.SETUP_FILE_PATH
 
 
 def clone_repositories():
@@ -55,20 +55,18 @@ def pull_repositories():
 
 def launch_test_parameters():
     ONT_RELEASE = '6.2.03'
-    DOMAIN_PARAM = 'ROBOT:suite-FIBER,${DOMAIN},variable-IS_HOST:False,variable-ONU_MGNT:${ONU_MGNT}'
+    TEST_DOMAIN_PARAM = 'ROBOT:suite-FIBER,{},variable-IS_HOST:False,variable-ONU_MGNT:${}'.format(TEST_DOMAIN, ONU_MGMT_MODE)
     TEST_TYPE = 'MOSWA_FIBER'
 
-    NT_TYPE = sutil.search_in_configuration(SETUP_DATA, ['NTData', 'Type'])
-    LT_TYPE = sutil.search_in_configuration(SETUP_DATA, ['LTData', 'Type'])
+    with open(SETUP_FILE_PATH, 'r') as f:
+        setup_file = f.read()
+    NT_TYPE = sutil.search_in_configuration(setup_file, ['NTData', 'Type'])
+    LT_TYPE = sutil.search_in_configuration(setup_file, ['LTData', 'Type'])
 
     LOG_DIR = 'logs'
     LOG_PATH = '{}/{}'.format(HOST_PATH, LOG_DIR)
     if not os.path.exists(LOG_DIR):
         sutil.run('cd {}; sudo mkdir {}'.format(HOST_PATH, LOG_DIR))
-
-    SETUP_FILE_PAHT = '{}/SETUP_INFO.yml'.format(HOST_PATH)
-    with open(SETUP_FILE_PAHT, "w") as f:
-        f.write(SETUP_DATA)
 
     extension_file_name = sutil.download_lt_nt_extension(LT_RELEASE, LT_EXTENSION, HOST_PATH)
     DEVICE_EXTENSION_PATH = '{}/{}'.format(HOST_PATH, extension_file_name)
@@ -81,9 +79,9 @@ def launch_test_parameters():
     parameters += '- N {}'.format(LT_TYPE)
     parameters += ' -T {}'.format(TEST_CASE_TYPE)
     parameters += ' -R {}'.format(ONT_RELEASE)
-    parameters += ' -d {}'.format(TEST_DOMAIN)
+    parameters += ' -d {}'.format(TEST_DOMAIN_PARAM)
     parameters += ' -G {}'.format(TARGET_IP)
-    parameters += ' -V {}:{}'.format(TEST_TYPE, SETUP_FILE_PAHT)
+    parameters += ' -V {}:{}'.format(TEST_TYPE, SETUP_FILE_PATH)
     parameters += ' -K {}'.format(DEVICE_EXTENSION_PATH)
     parameters += ' -D {}'.format(LOG_PATH)
     return parameters
@@ -110,19 +108,16 @@ def main():
 
 
 def test_main():
-    global TEST_CASE_TYPE, TEST_DOMAIN, ONU_MGMT_MODE, TARGET_IP, HOST_PATH, HOST_REPO_PATH, LT_RELEASE, LT_EXTENSION, SETUP_DATA
+    global TEST_CASE_TYPE, TEST_DOMAIN, ONU_MGMT_MODE, TARGET_IP, HOST_PATH, HOST_REPO_PATH, LT_RELEASE, LT_EXTENSION, SETUP_FILE_PATH
     TEST_CASE_TYPE = 'smoke'
-    # TEST_DOMAIN = 'ROBOT:suite-FIBER,${DOMAIN},variable-IS_HOST:False,variable-ONU_MGNT:${ONU_MGNT}'
-    TEST_DOMAIN = 'ROBOT:suite-FIBER,{},variable-IS_HOST:False,variable-ONU_MGNT:${}'.format(TEST_DOMAIN, ONU_MGMT_MODE)
+    TEST_DOMAIN = 'l2fwd'
     ONU_MGMT_MODE = 'virtual'
     TARGET_IP = '138.203.76.194'
     HOST_PATH = '/home/hamin/test_atc'
     HOST_REPO_PATH = '/home/hamin/atc_repo'
     LT_RELEASE = '21.09'
     LT_EXTENSION = '409'
-    with open('test/setup_data.yml', 'r') as f:
-        SETUP_DATA = f.read()
     main()
-    'python run_atc.py --TEST_CASE_TYPE smoke --TEST_DOMAIN l2fwd --ONU_MGMT_MODE virtual --TARGET_IP 138.203.76.194 --HOST_PATH = /home/hamin/test_atc --HOST_REPO_PATH /home/hamin/atc_repo --LT_RELEASE 21.09 --LT_EXTENSION 409'
+    'python run_atc.py --TEST_CASE_TYPE smoke --TEST_DOMAIN l2fwd --ONU_MGMT_MODE virtual --TARGET_IP 138.203.76.194 --HOST_PATH /home/hamin/test_atc --HOST_REPO_PATH /home/hamin/atc_repo --LT_RELEASE 21.09 --LT_EXTENSION 409  --SETUP_FILE_PATH test/setup_data.yml'
 
 main()

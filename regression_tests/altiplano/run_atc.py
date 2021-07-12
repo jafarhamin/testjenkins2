@@ -43,14 +43,14 @@ def read_arguments():
 
 def clone_repositories():
     if not os.path.exists('{}/atc'.format(HOST_REPO_PATH)):
-        sutil.run('cd {}; sudo hg clone ssh://Devws114//repo/atc/atc'.format(HOST_REPO_PATH))
+        sutil.run('cd {}; hg clone ssh://Devws114//repo/atc/atc'.format(HOST_REPO_PATH))
     if not os.path.exists('{}/robot'.format(HOST_REPO_PATH)):
-        sutil.run('cd {}; sudo hg clone ssh://Devws114//repo/atc/robot'.format(HOST_REPO_PATH))
+        sutil.run('cd {}; hg clone ssh://Devws114//repo/atc/robot'.format(HOST_REPO_PATH))
 
 
 def pull_repositories():
-    sutil.run('cd {}/atc; sudo hg pull -u'.format(HOST_REPO_PATH))
-    sutil.run('cd {}/robot; sudo hg pull -u'.format(HOST_REPO_PATH))
+    sutil.run('cd {}/atc; hg pull -u'.format(HOST_REPO_PATH))
+    sutil.run('cd {}/robot; hg pull -u'.format(HOST_REPO_PATH))
 
 
 def launch_test_parameters():
@@ -66,7 +66,7 @@ def launch_test_parameters():
     LOG_DIR = 'logs'
     LOG_PATH = '{}/{}'.format(HOST_PATH, LOG_DIR)
     if not os.path.exists(LOG_DIR):
-        sutil.run('cd {}; sudo mkdir {}'.format(HOST_PATH, LOG_DIR))
+        sutil.run('cd {}; mkdir {}'.format(HOST_PATH, LOG_DIR))
 
     extension_file_name = sutil.download_lt_nt_extension(LT_RELEASE, LT_EXTENSION, HOST_PATH)
     DEVICE_EXTENSION_PATH = '{}/{}'.format(HOST_PATH, extension_file_name)

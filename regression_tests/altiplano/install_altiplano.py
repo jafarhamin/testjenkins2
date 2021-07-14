@@ -57,10 +57,10 @@ def read_arguments():
     VONU_PLUG = args.VONU_PLUG
     EXTRA_APPS = args.EXTRA_APPS.split(',')
     TASKS = args.TASKS.split(',')
-    print(PRIVATE_IP)
+
 
 def read_kubernetes_settings_file():
-    return sutil.read_eval_file((KUBERNETES_PATH, {'AV_PUBLIC_IP': PUBLIC_IP}))
+    return sutil.read_eval_file(KUBERNETES_PATH, {'AV_PUBLIC_IP': PUBLIC_IP})
 
 
 def minikube_is_running():
@@ -249,7 +249,7 @@ def keep_sending_rpc(rpc, attempts=5, port='6514', mode='config'):
     if attempt_sending_rpc(rpc, attempts, port, mode):
         return True
     sutil.info('Failed to send RPC, Lets increase the request time out and try again')
-    timeout_rpc = sutil.read_eval_file((TIMEOUT_RPC)
+    timeout_rpc = sutil.read_eval_file(TIMEOUT_RPC)
     if not attempt_sending_rpc(timeout_rpc, attempts):
         sutil.info('Failed to increase the request time out. Failed to send RPC')
         return False
@@ -263,7 +263,7 @@ def install_license():
     release_year = AV_RELEASE.split('.')
     release_year = release_year[0]
     licence_key = ''
-    licence_keys = sutil.read_eval_file((LICENSES_PATH)
+    licence_keys = sutil.read_eval_file(LICENSES_PATH)
     for licence in licence_keys['licenses']:
         if licence['release'] == release_year:
             licence_key = licence['key']
@@ -271,23 +271,23 @@ def install_license():
     if licence_key == '':
         sutil.error('Licence {} not found'.format(release_year), immediate_exit=False)
         return
-    license_rpc = sutil.read_eval_file((LICENSE_RPC, {'LICENCE_KEY': licence_key})
+    license_rpc = sutil.read_eval_file(LICENSE_RPC, {'LICENCE_KEY': licence_key})
     keep_sending_rpc(license_rpc)
     keep_sending_rpc(license_rpc, port='6515')
 
 
 def connect_av_ac():
-    connect_av_ac_rpc = sutil.read_eval_file((CONNECT_AV_AC_RPC, {'AV_IP': PRIVATE_IP})
+    connect_av_ac_rpc = sutil.read_eval_file(CONNECT_AV_AC_RPC, {'AV_IP': PRIVATE_IP})
     return keep_sending_rpc(connect_av_ac_rpc, port='6515')
 
 
 def install_gui_applications():
     vproxymgmt_port = sutil.run('sudo kubectl get svc|grep vonuproxy-mgmt | awk \'{print $(NF-1)}\' | cut -d \':\' -f 2 | cut -d \'/\' -f 1')
-    apps = sutil.read_eval_file((GUI_APPS_PATH)
+    apps = sutil.read_eval_file(GUI_APPS_PATH)
     for app in apps['apps']:
         app_name = app['name']
         if app_name == 'basic' or app_name in EXTRA_APPS:
-            app_rpc = sutil.read_eval_file(('rpcs/{}'.format(app['rpc']), {'AV_IP': PUBLIC_IP, 'VPORXYMGMT_PORT': vproxymgmt_port})
+            app_rpc = sutil.read_eval_file('rpcs/{}'.format(app['rpc']), {'AV_IP': PUBLIC_IP, 'VPORXYMGMT_PORT': vproxymgmt_port})
             keep_sending_rpc(app_rpc)
 
 
@@ -310,7 +310,7 @@ def download_tar_lt_nt_extension(lt_release, lt_extension, path_to_save):
 
 
 def calculete_lt_nt_extension_names_to_install():
-    extension_patterns = sutil.read_eval_file((DEVICE_EXTENSIONS_PATH)
+    extension_patterns = sutil.read_eval_file(DEVICE_EXTENSIONS_PATH)
     extension_patterns = extension_patterns['device_extensions']
     extension_patterns = '|'.join(v['name'] for v in extension_patterns)
     extensions = sutil.run('cd {}/internal/YANG; find . -name "*.zip" | grep -i -E "{}"'.format(HOST_PATH, extension_patterns))
@@ -321,7 +321,7 @@ def calculete_lt_nt_extension_names_to_install():
 
 def configure_device_exentsion(extension_name, extension_path, av_pod):
     sutil.run('sudo kubectl cp {} {}:/root'.format(extension_path, av_pod))
-    extension_rpc = sutil.read_eval_file((DEVICE_PLUG_RPC, {'PLUG_NAME': extension_name})
+    extension_rpc = sutil.read_eval_file(DEVICE_PLUG_RPC, {'PLUG_NAME': extension_name})
     keep_sending_rpc(extension_rpc, mode = 'dispatch')
 
 
@@ -350,7 +350,6 @@ def main():
     read_arguments()
     sutil.info('Checking Minikube status')
     minikube = minikube_is_running()
-    sutil.info(minikube)
     if 'upgrade-minikube' in TASKS or not minikube:
         sutil.info('Upgrading Minikube')
         remove_minikube()

@@ -60,7 +60,7 @@ def read_arguments():
     print(PRIVATE_IP)
 
 def read_kubernetes_settings_file():
-    return sutil.read_eval_file((KUBERNETES_PATH, {'AV_PUBLIC_IP': PUBLIC_IP})
+    return sutil.read_eval_file((KUBERNETES_PATH, {'AV_PUBLIC_IP': PUBLIC_IP}))
 
 
 def minikube_is_running():

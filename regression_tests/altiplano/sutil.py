@@ -45,7 +45,7 @@ def wait(sec):
 def download_file(file_name, file_url, path_to_save):
     if os.path.exists('{}/{}'.format(path_to_save, file_name)):
         return
-    run('cd {}; wget {} --no-proxy'.format(path_to_save, file_url))
+    run('cd {}; sudo wget {} --no-proxy'.format(path_to_save, file_url))
 
 
 
@@ -74,7 +74,14 @@ def search_in_configuration(configuration, key_path):
             return None
     end_index = configuration.find('\n', index)
     result = configuration[index: end_index].split(':')
-    return result[1].strip()
+    result = result[1].strip()
+    comment_index = result.find('#')
+    if comment_index != -1:
+        result = result[0:comment_index]
+        result = result.strip()
+    if result.find("'") == 0 and result.find("'", 1) == len(result) - 1:
+        result = result[1:-1]
+    return result
 
 
 def calculete_lt_nt_extension_name_url(lt_release, lt_extension):

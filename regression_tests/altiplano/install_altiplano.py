@@ -1,11 +1,11 @@
 import requests
 from ncclient import manager
 from ncclient.xml_ import to_ele
+import argparse
 import sutil
 
-# ENVRIRONMENT VARIABLES
+# INPUT ARGUMENTS
 HOST_PATH = ''
-LOCATION = ''
 PUBLIC_IP = ''
 PRIVATE_IP = ''
 AV_RELEASE = ''
@@ -22,7 +22,6 @@ GUI_APPS_PATH = 'data/gui_apps.json'
 KUBERNETES_PATH = 'data/kubernetes.json'
 LICENSES_PATH = 'data/licenses.json'
 DEVICE_EXTENSIONS_PATH = 'data/device_extensions.json'
-
 CONNECT_AV_AC_RPC = 'rpcs/connect_av_ac.xml'
 DEVICE_PLUG_RPC = 'rpcs/device_plug.xml'
 KIBANA_VIRTUALIZER_RPC = 'rpcs/kubana_virtualizer.xml'
@@ -31,26 +30,26 @@ TIMEOUT_RPC = 'rpcs/timeout.xml'
 VPROXY_GUI_RPC = 'rpcs/vproxy_gui.xml'
 
 
-
-
 def read_arguments():
-    parser = ArgumentParser()
-    parser.add_argument('--HOST_PATH', dest='HOST_PATH', help='')
-    parser.add_argument('--PUBLIC_IP', dest='PUBLIC_IP', help='virtual|embed')
-    parser.add_argument('--PRIVATE_IP', dest='PRIVATE_IP', help='')
-    parser.add_argument('--AV_RELEASE', dest='AV_RELEASE', help='')
-    parser.add_argument('--AV_BUILD', dest='AV_BUILD', help='')
-    parser.add_argument('--LT_RELEASE', dest='LT_RELEASE', help='')
-    parser.add_argument('--LT_EXTENSION', dest='LT_EXTENSION', default='', help='')
-    parser.add_argument('--VONU_PLUG', dest='VONU_PLUG', help='')
-    parser.add_argument('--EXTRA_APPS', dest='EXTRA_APPS', help='')
-    parser.add_argument('--TASKS', dest='TASKS', help='')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--HOST_PATH', dest='HOST_PATH', required=True, help='Working directory path')
+    parser.add_argument('--PUBLIC_IP', dest='PUBLIC_IP', required=True, help='Public IP address of AV')
+    parser.add_argument('--PRIVATE_IP', dest='PRIVATE_IP', required=False, help='Private IP address of AV (needed if AV GUI is not accessible through public IP)')
+    parser.add_argument('--AV_RELEASE', dest='AV_RELEASE', required=True, help='AV release, i.e. 21.9.0-SNAPSHOT')
+    parser.add_argument('--AV_BUILD', dest='AV_BUILD', required=True, help='AV build, i.e. latest')
+    parser.add_argument('--LT_RELEASE', dest='LT_RELEASE', required=True, help='LT release, i.e. 21.06')
+    parser.add_argument('--LT_EXTENSION', dest='LT_EXTENSION', required=True, help='LT extension, i.e. 304')
+    parser.add_argument('--VONU_PLUG', dest='VONU_PLUG', required=False, help='VONU plug (optional)')
+    parser.add_argument('--EXTRA_APPS', dest='EXTRA_APPS', required=True, help='Extra applications to install, i.e. light-verion,vproxy-GUI')
+    parser.add_argument('--TASKS', dest='TASKS', required=True, help='Tasks to be done, i.e. upgrade-minikube,upgrade-av,upgrade-device-extensions') 
     args = parser.parse_args()
 
-    global HOST_PATH, LOCATION, PUBLIC_IP, PRIVATE_IP, AV_RELEASE, AV_BUILD, LT_RELEASE, LT_EXTENSION, VONU_PLUG, EXTRA_APPS, TASKS
+    global HOST_PATH, PUBLIC_IP, PRIVATE_IP, AV_RELEASE, AV_BUILD, LT_RELEASE, LT_EXTENSION, VONU_PLUG, EXTRA_APPS, TASKS
     HOST_PATH = args.HOST_PATH
     PUBLIC_IP = args.PUBLIC_IP
     PRIVATE_IP = args.PRIVATE_IP
+    if PRIVATE_IP is None or PRIVATE_IP =='':
+        PRIVATE_IP = PUBLIC_IP
     AV_RELEASE = args.AV_RELEASE
     AV_BUILD = args.AV_BUILD
     LT_RELEASE = args.LT_RELEASE
@@ -58,7 +57,7 @@ def read_arguments():
     VONU_PLUG = args.VONU_PLUG
     EXTRA_APPS = args.EXTRA_APPS.split(',')
     TASKS = args.TASKS.split(',')
-
+    print(PRIVATE_IP)
 
 def read_kubernetes_settings_file():
     return read_eval_file(KUBERNETES_PATH, {'AV_PUBLIC_IP': PUBLIC_IP})
@@ -205,6 +204,7 @@ def wait_for_pod(pod_name):
     if attempts == 0:
         error('Pod {} failed to get ready'.format(pod_name))
 
+
 def set_ssh_env_for_av_ac():
     resources = read_kubernetes_settings_file()
     pod_info = get_pod_info('altiplano-av')
@@ -344,6 +344,7 @@ def restart_pods():
     info('Waiting for AC pod to get ready')
     wait_for_pod('altiplano-ac')
 
+
 def main():
     info('Initializing AV information')
     read_arguments()
@@ -393,18 +394,13 @@ def main():
 
 
 def test_main():
-    os.environ['HOST_PATH'] = '/home/hamin/install_altiplano'
-    os.environ['LOCATION'] = 'antwerp'
-    os.environ['PUBLIC_IP'] = '10.157.49.55'
-    os.environ['PRIVATE_IP'] = '192.168.0.31'
-    os.environ['AV_RELEASE'] = '21.9.0-SNAPSHOT'
-    os.environ['AV_BUILD'] = 'latest'
-    os.environ['VONU_PLUG'] = ''
-    os.environ['LT_RELEASE'] = '21.06'
-    os.environ['LT_EXTENSION'] = '304'
-    os.environ['EXTRA_APPS'] = 'light-verion,vproxy-GUI'
-    os.environ['TASKS'] = 'upgrade-minikube,upgrade-av,upgrade-device-extensions'
-    main()
+    example = '''
+        python install_altiplano.py --HOST_PATH /home/hamin/install_altiplano --PUBLIC_IP 10.157.49.55 --PRIVATE_IP 192.168.0.31 
+        --AV_RELEASE 21.9.0-SNAPSHOT --AV_BUILD latest --LT_RELEASE 21.06 --LT_EXTENSION 304  --EXTRA_APPS light-verion,vproxy-GUI
+        --TASKS upgrade-minikube,upgrade-av,upgrade-device-extensions
+        '''
+    print(example.replace('\n', ' '))
+
 
 if __name__ == "__main__":
     main()

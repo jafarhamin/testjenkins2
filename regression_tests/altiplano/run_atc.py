@@ -62,6 +62,8 @@ def launch_test_parameters():
         setup_file = f.read()
     NT_TYPE = sutil.search_in_configuration(setup_file, ['NTData', 'Type'])
     LT_TYPE = sutil.search_in_configuration(setup_file, ['LTData', 'Type'])
+    TRAFFIC_GEN_TYPE = sutil.search_in_configuration(setup_file, ['TrafficGenData', 'Type'])
+    TRAFFIC_GEN_IP = sutil.search_in_configuration(setup_file, ['TrafficGenData', 'IP'])
 
     LOG_DIR = 'logs'
     LOG_PATH = '{}/{}'.format(HOST_PATH, LOG_DIR)
@@ -80,7 +82,7 @@ def launch_test_parameters():
     parameters += ' -d {}'.format(TEST_DOMAIN_PARAM)
     parameters += ' -G {}'.format(TARGET_IP)
     parameters += ' -V {}:{}'.format(TEST_TYPE, SETUP_FILE_PATH)
-    parameters += ' -P PCTA:10.80.89.9'
+    parameters += ' -P {}:{}'.format(TRAFFIC_GEN_TYPE, TRAFFIC_GEN_IP)
     parameters += ' -a --framework ROBOT'
     parameters += ' -K {}'.format(DEVICE_EXTENSION_PATH)
     parameters += ' -e MERC'
@@ -96,8 +98,7 @@ def launch_test_batch():
     cmds.append('source {}/robot/.robot.profile'.format(HOST_REPO_PATH))
     parameters = launch_test_parameters()
     cmds.append('launchTestBatch {}'.format(parameters))
-    cmds = '; '.join(cmds)
-    
+    cmds = '; '.join(cmds)    
     sutil.run(cmds)
     'launchTestBatch -k -f -r FANT-F -N FGLT-B -T ${TYPE} -R 6.2.03 -A legacy -d ROBOT:suite-FIBER,${DOMAIN},variable-IS_HOST:False,variable-ONU_MGNT:${ONU_MGNT}, -G ${LITESPAN_IP} -V MOSWA_FIBER:${SETUP} -P PCTA:${PCTA} -a --framework ROBOT -K $EXTRA -e MERC -D ${LOGDIR}'
     '/repo/atc/cm8/auto/tools/pbscript/launchTestBatch -v -k -R 21.06 -r NFXS-E -N FANT-F -V MOSWA_FIBER:NFXSD_FANTF_MOSWA_FIBER_WEEKLY_01_ATH_MOSWA_NT_LT3.yaml -K /repo/lightspan_2106.271.extra.tar -a --framework ROBOT -e MERC -G 10.80.89.40 -P PCTA:10.80.89.9 -A legacy' 
@@ -108,8 +109,8 @@ def main():
     sutil.info('Initializing setup information')
     read_arguments()
     sutil.info('Pulling repositories')
-    #clone_repositories()
-    #pull_repositories()
+    clone_repositories()
+    pull_repositories()
     sutil.info('Launching test batch')
     launch_test_batch()
 
@@ -126,5 +127,6 @@ def test_main():
     LT_EXTENSION = '409'
     main()
     'python run_atc.py --TEST_CASE_TYPE smoke --TEST_DOMAIN l2fwd --ONU_MGMT_MODE virtual --TARGET_IP 138.203.76.194 --HOST_PATH /home/hamin/test_atc --HOST_REPO_PATH /home/hamin/atc_repo --LT_RELEASE 21.09 --LT_EXTENSION 409  --SETUP_FILE_PATH test/setup_data.yml'
+
 
 main()
